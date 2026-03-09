@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>AI Dev Agent</h2>
+
+<button onclick="newChat()">New Chat</button>
+
+<br><br>
+
+<input id="repo" placeholder="username/repo"/>
+
+<br><br>
+
+<textarea id="task"></textarea>
+
+<br><br>
+
+<button onclick="run()">Run Agent</button>
+
+<pre id="output"></pre>
+
+<script>
+
+let session = crypto.randomUUID()
+
+function newChat(){
+session = crypto.randomUUID()
+}
+
+async function run(){
+
+const repo=document.getElementById("repo").value
+const instruction=document.getElementById("task").value
+
+const res = await fetch("/api/agent",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({repo,instruction,session})
+})
+
+const data = await res.json()
+
+document.getElementById("output").textContent =
+JSON.stringify(data,null,2)
+
+}
+
+</script>
+
+</body>
+</html>
