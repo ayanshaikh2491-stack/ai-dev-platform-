@@ -1,10 +1,9 @@
+// lib/vercel.js
+
 const VERCEL_TOKEN = process.env.VERCEL_TOKEN;
 const VERCEL_ORG_ID = process.env.VERCEL_ORG_ID;
 
-export async function createDeployment(
-  projectName: string,
-  files: Array<{ name: string; content: string }>
-) {
+export async function createDeployment(projectName, files) {
   try {
     const response = await fetch('https://api.vercel.com/v13/deployments', {
       method: 'POST',
@@ -20,7 +19,7 @@ export async function createDeployment(
             data: file.content,
           };
           return acc;
-        }, {} as Record<string, { file: string; data: string }>),
+        }, {}),
         projectSettings: {
           framework: 'nextjs',
         },
@@ -42,7 +41,7 @@ export async function createDeployment(
       success: false,
       url: null,
       deploymentId: null,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error.message || 'Unknown error',
     };
   }
 }
