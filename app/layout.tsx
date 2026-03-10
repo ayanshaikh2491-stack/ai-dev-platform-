@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NEXUS AI Agent - Autonomous Dev Assistant",
-  description: "AI-powered development assistant that edits GitHub repositories autonomously",
+  title: "NEXUS AI Agent",
+  description: "Autonomous development assistant",
 };
 
 export default function RootLayout({
