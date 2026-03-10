@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { callGroq } from "@/lib/groqClient";
+
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 const SYSTEM_PROMPT = `You are NEXUS AI Agent - an elite autonomous development assistant with 50+ years of experience.
 
@@ -48,10 +49,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing repo or instruction" }, { status: 400 });
     }
 
-    const content = await callGroq(
-      SYSTEM_PROMPT,
-      `Repository: ${repo}\nBranch: ${branch}\n\nTask: ${instruction}\n\nCreate a detailed execution plan in JSON format.`
-    );
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: `Repository: ${repo}\nBranch: ${branch}\n\nTask: ${instruction}\n\nCreate a detailed execution plan.` }
+        ],
+        max_tokens: 8192,
+        temperature: 0.5,
+      }),
+    });
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || "";
 
     // Try to parse JSON from response
     let plan;
