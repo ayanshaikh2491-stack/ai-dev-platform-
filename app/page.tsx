@@ -3,8 +3,10 @@
 import { useState } from "react";
 
 interface Message {
-  role: string;
+  role: "user" | "assistant" | "system";
   content: string;
+  code?: string;
+  fileName?: string;
 }
 
 export default function Home() {
@@ -13,26 +15,22 @@ export default function Home() {
   const [repoUrl, setRepoUrl] = useState("ayanshaikh2491-stack/ai-dev-platform-");
   const [branch, setBranch] = useState("main");
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"chat" | "code" | "preview">("chat");
+  const [currentCode, setCurrentCode] = useState("");
+  const [currentFile, setCurrentFile] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
   const [showSidebar, setShowSidebar] = useState(true);
-
-  const features = [
-    { icon: "🎨", title: "Web Development", desc: "React, Next.js, Tailwind" },
-    { icon: "📱", title: "Mobile Apps", desc: "React Native, PWA" },
-    { icon: "⚙️", title: "Backend APIs", desc: "Node.js, Express, REST" },
-    { icon: "🗄️", title: "Database", desc: "MongoDB, PostgreSQL" },
-    { icon: "🚀", title: "DevOps", desc: "Vercel, GitHub, CI/CD" },
-    { icon: "🐛", title: "Debugging", desc: "Fix errors automatically" },
-  ];
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
-    const newMessage: Message = { role: "user", content: input };
-    const updatedMessages = [...messages, newMessage];
+    const userMessage: Message = { role: "user", content: input };
+    const updatedMessages = [...messages, userMessage];
     
     setMessages(updatedMessages);
     setInput("");
     setLoading(true);
+    setActiveTab("chat");
 
     try {
       const res = await fetch("/api/agent", {
@@ -44,86 +42,96 @@ export default function Home() {
       const data = await res.json();
 
       if (data.success) {
-        setMessages([
-          ...updatedMessages,
-          { role: "assistant", content: data.plan?.summary || "Task completed!" },
-        ]);      } else {
-        setMessages([
-          ...updatedMessages,
-          { role: "system", content: "Error: " + data.error },
-        ]);
+        // Show AI response
+        const aiMessage: Message = {
+          role: "assistant",
+          content: `✅ **Task Planned**\n\n📋 ${data.plan?.summary || "Processing..."}\n⏱️ ${data.plan?.estimatedTime || ""}`,
+        };
+        setMessages([...updatedMessages, aiMessage]);
+        // If code generated, show in Code tab
+        if (data.plan?.steps?.[0]?.code) {
+          setCurrentCode(data.plan.steps[0].code);
+          setCurrentFile(data.plan.steps[0].file || "new-file.tsx");
+        }
+
+        // Generate preview URL
+        const [owner, name] = repoUrl.split("/");
+        setPreviewUrl(`https://${name}-git-${branch}-${owner.toLowerCase().replace(/[^a-z0-9]/g, "-")}.vercel.app`);
+
+      } else {
+        setMessages([...updatedMessages, { 
+          role: "system", 
+          content: `❌ Error: ${data.error}` 
+        }]);
       }
     } catch (error) {
-      setMessages([
-        ...updatedMessages,
-        { role: "system", content: "Connection error" },
-      ]);
+      setMessages([...updatedMessages, { 
+        role: "system", 
+        content: "❌ Connection error" 
+      }]);
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
+    <div className="flex h-screen bg-black text-white">
       {/* Sidebar */}
       {showSidebar && (
-        <aside className="w-72 bg-gray-800 border-r border-gray-700 flex flex-col">
-          {/* Logo */}
-          <div className="p-4 border-b border-gray-700">
+        <aside className="w-72 bg-[#0f0f0f] border-r border-[#1a1a1a] flex flex-col">
+          <div className="p-4 border-b border-[#1a1a1a]">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                <span className="text-black font-bold text-xl">N</span>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white font-bold text-xl">N</span>
               </div>
               <div>
-                <h1 className="font-bold text-lg">NEXUS AI</h1>
-                <p className="text-xs text-gray-400">Autonomous Dev Agent</p>
+                <h1 className="font-bold">NEXUS AI</h1>
+                <p className="text-xs text-gray-500">Dev Assistant</p>
               </div>
             </div>
             <button
               onClick={() => setMessages([])}
-              className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-medium"
             >
-              <span>+</span> New Chat
+              + New Chat
             </button>
           </div>
-
           {/* Features */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase mb-3">Capabilities</h2>
-            <div className="space-y-2">
-              {features.map((feature, idx) => (
-                <div key={idx} className="p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xl">{feature.icon}</span>
-                    <span className="font-medium text-sm">{feature.title}</span>
-                  </div>                  <p className="text-xs text-gray-400 ml-8">{feature.desc}</p>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {[
+              { icon: "🎨", title: "Web Dev", desc: "React, Next.js" },
+              { icon: "📱", title: "Mobile", desc: "React Native" },
+              { icon: "⚙️", title: "Backend", desc: "Node.js, API" },
+              { icon: "🗄️", title: "Database", desc: "MongoDB, SQL" },
+              { icon: "🚀", title: "Deploy", desc: "Vercel, GitHub" },
+              { icon: "🐛", title: "Debug", desc: "Fix errors" },
+            ].map((f, i) => (
+              <div key={i} className="p-3 bg-[#141414] rounded-lg">
+                <div className="flex items-center gap-2">
+                  <span>{f.icon}</span>
+                  <span className="text-sm font-medium">{f.title}</span>
                 </div>
-              ))}
-            </div>
+                <p className="text-xs text-gray-500 ml-7">{f.desc}</p>
+              </div>
+            ))}
           </div>
 
           {/* Settings */}
-          <div className="p-4 border-t border-gray-700 space-y-3">
-            <div>
-              <label className="text-xs text-gray-400 block mb-1">GitHub Repo</label>
-              <input
-                type="text"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm focus:outline-none focus:border-green-500"
-                placeholder="username/repo"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-gray-400 block mb-1">Branch</label>
-              <input
-                type="text"
-                value={branch}
-                onChange={(e) => setBranch(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm focus:outline-none focus:border-green-500"
-                placeholder="main"
-              />
-            </div>
+          <div className="p-4 border-t border-[#1a1a1a] space-y-3">
+            <input
+              type="text"
+              value={repoUrl}
+              onChange={(e) => setRepoUrl(e.target.value)}
+              placeholder="username/repo"
+              className="w-full px-3 py-2 bg-[#141414] border border-[#1a1a1a] rounded text-sm"
+            />
+            <input
+              type="text"
+              value={branch}
+              onChange={(e) => setBranch(e.target.value)}
+              placeholder="Branch"
+              className="w-full px-3 py-2 bg-[#141414] border border-[#1a1a1a] rounded text-sm"
+            />
           </div>
         </aside>
       )}
@@ -131,125 +139,134 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between px-4 py-3 border-b border-gray-700 bg-gray-800">
-          <button
-            onClick={() => setShowSidebar(!showSidebar)}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <h2 className="font-semibold">AI Development Assistant</h2>
-          <div className="w-10"></div>
+        <header className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f0f]">
+          <button onClick={() => setShowSidebar(!showSidebar)} className="p-2">☰</button>
+          <div className="flex gap-2">
+            {["chat", "code", "preview"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}                className={`px-4 py-2 rounded text-sm ${
+                  activeTab === tab 
+                    ? "bg-blue-600 text-white" 
+                    : "bg-[#141414] hover:bg-[#1a1a1a]"
+                }`}
+              >
+                {tab === "chat" ? "💬" : tab === "code" ? "💻" : "🌐"} {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
         </header>
 
-        {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto">          {messages.length === 0 ? (
-            <div className="max-w-3xl mx-auto p-8">
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-black font-bold text-4xl">N</span>
+        {/* Content Area */}
+        <div className="flex-1 overflow-hidden">
+          {/* Chat Tab */}
+          {activeTab === "chat" && (
+            <div className="h-full flex flex-col">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages.length === 0 ? (
+                  <div className="text-center mt-20">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white text-4xl font-bold">N</span>
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2">NEXUS AI Agent</h2>
+                    <p className="text-gray-500 mb-6">Ask me to build anything...</p>
+                    <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                      {["Add login page", "Create contact form", "Add dark mode", "Fix navbar"].map((ex, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setInput(ex)}
+                          className="p-3 bg-[#141414] rounded-lg text-left text-sm hover:bg-[#1a1a1a]"
+                        >
+                          {ex}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  messages.map((msg, i) => (
+                    <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[85%] rounded-2xl px-5 py-3 ${
+                        msg.role === "user" 
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 rounded-br-md"
+                          : msg.role === "system"
+                          ? "bg-red-950/30 border border-red-900 text-red-300 rounded-bl-md"
+                          : "bg-[#141414] border border-[#1a1a1a] rounded-bl-md"
+                      }`}>
+                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      </div>
+                    </div>                  ))
+                )}
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="bg-[#141414] border border-[#1a1a1a] rounded-2xl px-5 py-3">
+                      <div className="flex gap-1">
+                        {[0, 150, 300].map((d, i) => (
+                          <div key={i} className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="p-4 border-t border-[#1a1a1a] bg-[#0f0f0f]">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                    placeholder="Tell me what to build..."
+                    disabled={loading}
+                    className="flex-1 px-4 py-3 bg-[#141414] border border-[#1a1a1a] rounded-xl focus:outline-none focus:border-blue-500"
+                  />
+                  <button
+                    onClick={sendMessage}
+                    disabled={loading || !input.trim()}
+                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-medium disabled:opacity-50"
+                  >
+                    Send
+                  </button>
                 </div>
-                <h1 className="text-3xl font-bold mb-2">Welcome to NEXUS AI</h1>
-                <p className="text-gray-400">Your autonomous development assistant</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-                <button
-                  onClick={() => setInput("Create a login page with email and password")}
-                  className="p-4 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 text-left transition-colors"
-                >
-                  <div className="font-medium mb-1">🔐 Create Login Page</div>
-                  <div className="text-sm text-gray-400">With email & password authentication</div>
-                </button>
-                <button
-                  onClick={() => setInput("Add a contact form with validation")}
-                  className="p-4 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 text-left transition-colors"
-                >
-                  <div className="font-medium mb-1">📧 Contact Form</div>
-                  <div className="text-sm text-gray-400">With form validation</div>
-                </button>
-                <button
-                  onClick={() => setInput("Create a responsive navigation bar")}
-                  className="p-4 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 text-left transition-colors"
-                >
-                  <div className="font-medium mb-1">🧭 Navigation Bar</div>
-                  <div className="text-sm text-gray-400">Responsive with mobile menu</div>
-                </button>
-                <button
-                  onClick={() => setInput("Add dark mode toggle to the website")}
-                  className="p-4 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 text-left transition-colors"
-                >
-                  <div className="font-medium mb-1">🌓 Dark Mode</div>
-                  <div className="text-sm text-gray-400">Toggle between light/dark</div>
-                </button>
-              </div>
-
-              <div className="text-center text-sm text-gray-500">
-                <p>Or type your custom request below</p>
               </div>
             </div>
-          ) : (
-            <div className="max-w-3xl mx-auto p-4 space-y-4">
-              {messages.map((msg, idx) => (
-                <div
-                  key={idx}                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-6 py-4 ${
-                      msg.role === "user"
-                        ? "bg-green-600 text-white rounded-br-md"
-                        : msg.role === "system"
-                        ? "bg-red-900/50 border border-red-500 text-red-200 rounded-bl-md"
-                        : "bg-gray-800 border border-gray-700 rounded-bl-md"
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed">{msg.content}</p>
-                  </div>
+          )}
+
+          {/* Code Tab */}
+          {activeTab === "code" && (
+            <div className="h-full bg-[#0a0a0a]">
+              {currentCode ? (
+                <pre className="p-4 text-sm overflow-auto h-full">
+                  <code className="text-gray-300">{currentCode}</code>
+                </pre>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <p>Code will appear here after AI generates it</p>
                 </div>
-              ))}
-              {loading && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-800 border border-gray-700 rounded-2xl rounded-bl-md px-6 py-4">
-                    <div className="flex gap-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                    </div>
+              )}
+            </div>          )}
+
+          {/* Preview Tab */}
+          {activeTab === "preview" && (
+            <div className="h-full bg-white">
+              {previewUrl ? (
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-full border-0"
+                  title="Preview"
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🌐</div>
+                    <p>Make a request to see live preview</p>
                   </div>
                 </div>
               )}
             </div>
           )}
         </div>
-
-        {/* Input Area */}
-        <div className="border-t border-gray-700 bg-gray-800 p-4">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="Tell me what to build..."
-                disabled={loading}
-                className="flex-1 px-6 py-4 bg-gray-700 border border-gray-600 rounded-xl focus:outline-none focus:border-green-500 disabled:opacity-50"
-              />
-              <button
-                onClick={sendMessage}
-                disabled={loading || !input.trim()}
-                className="px-8 py-4 bg-green-600 hover:bg-green-700 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Send
-              </button>            </div>
-            <p className="text-xs text-gray-500 text-center mt-2">
-              NEXUS AI can make mistakes. Review generated code before deploying.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
-}
+      }
