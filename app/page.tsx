@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 
+interface Message {
+  role: string;
+  content: string;
+}
+
 export default function Home() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [repoUrl, setRepoUrl] = useState("ayanshaikh2491-stack/ai-dev-platform-");
   const [branch, setBranch] = useState("main");
@@ -12,8 +17,10 @@ export default function Home() {
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
-    const newMessages = [...messages, { role: "user", content: input }];
-    setMessages(newMessages);
+    const newMessage: Message = { role: "user", content: input };
+    const updatedMessages = [...messages, newMessage];
+    
+    setMessages(updatedMessages);
     setInput("");
     setLoading(true);
 
@@ -28,26 +35,26 @@ export default function Home() {
 
       if (data.success) {
         setMessages([
-          ...newMessages,
+          ...updatedMessages,
           { role: "assistant", content: data.plan?.summary || "Done!" },
         ]);
       } else {
         setMessages([
-          ...newMessages,
+          ...updatedMessages,
           { role: "system", content: "Error: " + data.error },
         ]);
       }
     } catch (error) {
       setMessages([
-        ...newMessages,
-        { role: "system", content: "Connection error" },
-      ]);
+        ...updatedMessages,
+        { role: "system", content: "Connection error" },      ]);
     }
 
     setLoading(false);
   };
 
-  return (    <div className="min-h-screen bg-gray-900 text-white">
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
       <header className="border-b border-gray-800 p-4 bg-gray-800">
         <h1 className="text-2xl font-bold text-green-500">NEXUS AI Agent</h1>
         <p className="text-sm text-gray-400">Autonomous Dev Assistant</p>
@@ -89,14 +96,14 @@ export default function Home() {
                     : "bg-gray-700 mr-auto max-w-[80%]"
                 }`}
               >
-                <p className="text-sm">{msg.content}</p>
-              </div>
+                <p className="text-sm">{msg.content}</p>              </div>
             ))
           )}
           {loading && (
             <div className="bg-gray-700 p-3 rounded-lg inline-flex gap-2">
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           )}
         </div>
