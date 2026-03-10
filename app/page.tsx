@@ -95,126 +95,71 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden">
-            {/* LEFT SIDEBAR: Chat & Settings */}
-      <aside className={`w-80 bg-[#0a0a0f] border-r border-[#1a1a2e] flex flex-col shadow-2xl z-20 transition-all duration-300`}>
-        {/* Header */}
-        <div className="p-6 border-b border-[#1a1a2e] bg-gradient-to-r from-blue-900/20 to-purple-900/20">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="relative">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse">
-                <span className="text-white font-bold text-2xl">N</span>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0a0a0f]"></div>
-            </div>
+    <div className="flex h-screen bg-[#050508] text-white overflow-hidden">
+            {/* LEFT SIDEBAR: Settings Only */}
+      <aside className="w-72 bg-[#0a0a0f] border-r border-[#1e1e28] flex flex-col shadow-xl z-20">
+        {/* Logo Area */}
+        <div className="p-6 border-b border-[#1e1e28]">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg">N</div>
             <div>
-              <h1 className="font-bold text-2xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                NEXUS AI
-              </h1>
-              <p className="text-xs text-gray-400 mt-1">Autonomous Dev Agent ✨</p>
+              <h1 className="font-bold text-lg">NEXUS AI</h1>
+              <p className="text-xs text-gray-500">Dev Assistant</p>
             </div>
           </div>
+          
           <button
             onClick={() => setMessages([])}
-            className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-blue-600/25 hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center gap-2 group"
+            className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg font-medium transition-all shadow-md"
           >
-            <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Chat
+            + New Chat
           </button>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {messages.length === 0 ? (
-            <div className="text-center text-gray-500 mt-10">
-              <p className="text-sm">Welcome to NEXUS AI Agent</p>
-              <p className="text-xs mt-2">Ask me to build something...</p>
-            </div>
-          ) : (
-            messages.map((msg, i) => (
-              <div key={i} className={`p-4 rounded-xl text-sm backdrop-blur-sm ${
-                msg.role === "user" 
-                  ? "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white ml-auto max-w-[90%] rounded-br-md shadow-lg shadow-blue-600/30 border border-blue-500/30" 
-                  : msg.role === "system"
-                  ? "bg-red-950/30 border border-red-900/50 text-red-200 mr-auto max-w-[90%] rounded-bl-md shadow-lg shadow-red-900/20"
-                  : "bg-[#14141e] border border-[#1a1a2e] mr-auto max-w-[90%] rounded-bl-md shadow-lg shadow-blue-900/10"
-              }`}>
-                {msg.content}
-              </div>
-            ))
-          )}
-          {loading && (            <div className="flex gap-1 p-3 bg-[#14141e] border border-[#1a1a2e] rounded-xl w-fit shadow-lg">
-              {[0, 150, 300].map((delay, i) => (
-                <div key={i} className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }}></div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Input Area */}
-        <div className="p-4 border-t border-[#1a1a2e] bg-[#0a0a0f]">
-          <div className="relative group">
+        {/* Settings Panel */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <div>
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">Repository</label>
             <input
               type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="Tell me what to build..."
-              disabled={loading}
-              className="w-full px-4 py-3 bg-[#14141e] border border-[#1a1a2e] hover:border-blue-500/50 focus:border-blue-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all duration-300 placeholder-gray-500 shadow-lg group-hover:shadow-xl"
+              value={repoUrl}
+              onChange={(e) => setRepoUrl(e.target.value)}
+              placeholder="username/repo-name"
+              className="w-full px-4 py-3 bg-[#16161e] border border-[#1e1e28] rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-sm"
             />
-            <button
-              onClick={sendMessage}
-              disabled={loading || !input.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-blue-600/30 transform hover:scale-105"
-            >
-              Send
-            </button>
           </div>
-        </div>
+          
+          <div>
+            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 block">Branch</label>
+            <input
+              type="text"
+              value={branch}
+              onChange={(e) => setBranch(e.target.value)}
+              placeholder="main"
+              className="w-full px-4 py-3 bg-[#16161e] border border-[#1e1e28] rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-sm"
+            />
+          </div>
 
-        {/* Settings Panel */}
-        <div className="p-6 border-t border-[#1a1a2e] bg-[#0a0a0f]">
-          <div className="space-y-4">
-            <div>
-              <label className="text-xs font-medium text-gray-400 block mb-2 flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                GitHub Repository
-              </label>
-              <input
-                type="text"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                className="w-full px-4 py-3 bg-[#14141e] border border-[#1a1a2e] hover:border-blue-500/50 focus:border-blue-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 placeholder-gray-500"
-                placeholder="username/repo-name"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-gray-400 block mb-2 flex items-center gap-2">                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                </svg>
-                Branch
-              </label>
-              <input
-                type="text"
-                value={branch}
-                onChange={(e) => setBranch(e.target.value)}
-                className="w-full px-4 py-3 bg-[#14141e] border border-[#1a1a2e] hover:border-purple-500/50 focus:border-purple-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 placeholder-gray-500"
-                placeholder="main"
-              />
+          <div className="pt-4 border-t border-[#1e1e28]">
+            <div className="bg-[#16161e] p-4 rounded-lg border border-[#1e1e28]">
+              <p className="text-xs text-gray-400 mb-2">Capabilities:</p>
+              <ul className="space-y-1 text-xs text-gray-300">
+                <li>• Web Development (React, Next.js)</li>
+                <li>• Mobile Apps (React Native)</li>                <li>• Backend APIs (Node.js)</li>
+                <li>• Database (MongoDB, SQL)</li>
+                <li>• DevOps (Vercel, GitHub)</li>
+                <li>• Debugging & Fixes</li>
+              </ul>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* RIGHT AREA: Code & Preview */}
-      <main className="flex-1 flex flex-col min-w-0 bg-gradient-to-br from-gray-900 via-black to-gray-900">
-        {/* Tabs */}
-        <div className="flex border-b border-[#1a1a2e] bg-[#0a0a0f]">
+      {/* MAIN CONTENT AREA: Professional Chat UI */}
+      <main className="flex-1 flex flex-col relative">
+        
+        {/* TOP TABS */}
+        <div className="flex border-b border-[#1e1e28] bg-[#0a0a0f]">
           <button
             onClick={() => setActiveTab("chat")}
             className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
@@ -241,61 +186,132 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 relative bg-[#0d1117]">
-                    {/* CHAT TAB */}
-          {activeTab === "chat" && (
-            <div className="absolute inset-0 p-4 overflow-y-auto">
-              <div className="text-center text-gray-500 mt-10">
-                <p>Switch to the left panel to chat.</p>
-              </div>
-            </div>
-          )}
+        {/* CHAT TAB CONTENT */}
+        {activeTab === "chat" && (
+          <div className="flex-1 overflow-y-auto p-6 md:p-10">
+            {messages.length === 0 ? (
+              // WELCOME SCREEN (AI Agency Style)
+              <div className="max-w-4xl mx-auto text-center mt-10">
+                <div className="mb-8">
+                  <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-blue-500/30 animate-bounce-slow">
+                    <span className="text-white text-4xl font-bold">N</span>                  </div>
+                </div>
+                
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg">
+                  Welcome to NEXUS AI
+                </h1>
+                <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+                  Your autonomous development assistant. I can create, edit, debug, and deploy code across multiple platforms.
+                </p>
 
-          {/* CODE EDITOR TAB */}
-          {activeTab === "code" && (
-            <div className="absolute inset-0 flex flex-col">
-              {/* File Path Bar */}
-              <div className="flex items-center gap-2 px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
+                {/* Quick Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+                  {[
+                    { icon: "🔐", title: "Create Login Page", desc: "With email & password authentication" },
+                    { icon: "📧", title: "Contact Form", desc: "With form validation & error handling" },
+                    { icon: "🧭", title: "Navigation Bar", desc: "Responsive with mobile menu toggle" },
+                    { icon: "🌓", title: "Dark Mode Toggle", desc: "Switch between light/dark themes" },
+                  ].map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setInput(item.desc)}
+                      className="group relative p-6 bg-[#16161e] hover:bg-[#1e1e28] border border-[#1e1e28] hover:border-blue-500/50 rounded-2xl text-left transition-all duration-300 hover:transform hover:scale-[1.02] hover:shadow-xl overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                      <div className="relative">
+                        <div className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
+                        <div className="font-semibold mb-2 group-hover:text-blue-400 transition-colors duration-300 text-lg">{item.title}</div>
+                        <div className="text-sm text-gray-400 leading-relaxed">{item.desc}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <p className="text-sm text-gray-500">Or type your custom request below 👇</p>
+              </div>
+            ) : (
+              // CHAT HISTORY
+              <div className="max-w-4xl mx-auto space-y-6">
+                {messages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[85%] rounded-2xl px-6 py-4 backdrop-blur-sm ${
+                      msg.role === "user" 
+                        ? "bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white ml-auto rounded-br-md shadow-lg shadow-blue-600/30 border border-blue-500/30" 
+                        : msg.role === "system"
+                        ? "bg-red-950/30 border border-red-900/50 text-red-200 mr-auto rounded-bl-md shadow-lg shadow-red-900/20"
+                        : "bg-[#16161e] border border-[#1e1e28] mr-auto rounded-bl-md shadow-lg shadow-blue-900/10"
+                    }`}>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                    </div>
+                  </div>                ))}
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="bg-[#16161e] border border-[#1e1e28] rounded-2xl rounded-bl-md px-6 py-4 shadow-lg shadow-blue-900/10">
+                      <div className="flex gap-2">
+                        {[0, 150, 300].map((delay, i) => (
+                          <div key={i} className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }}></div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* CODE EDITOR TAB */}
+        {activeTab === "code" && (
+          <div className="flex-1 relative bg-[#0d1117]">
+             <div className="flex items-center gap-2 px-4 py-2 bg-[#161b22] border-b border-[#30363d]">
                 <span className="text-xs text-gray-400">src/</span>
                 <span className="text-xs font-mono text-blue-400">{currentFile}</span>
               </div>
-              {/* Monaco Editor */}
-              <Editor
-                height="100%"
-                language="html"
-                theme="vs-dark"
-                value={currentCode}
-                options={{
-                  minimap: { enabled: false },
-                  fontSize: 14,
-                  wordWrap: "on",
-                  automaticLayout: true,
-                  scrollBeyondLastLine: false,
-                }}
-              />
-            </div>
-          )}
+            <Editor
+              height="100%"
+              language="html"
+              theme="vs-dark"
+              value={currentCode}
+              options={{ minimap: { enabled: false }, fontSize: 14, wordWrap: "on" }}
+            />
+          </div>
+        )}
 
-          {/* PREVIEW TAB */}
-          {activeTab === "preview" && (
-            <div className="absolute inset-0 bg-white">
-              {previewUrl ? (
-                <iframe
-                  src={previewUrl}
-                  className="w-full h-full border-0"
-                  title="Live Preview"
-                  sandbox="allow-scripts allow-same-origin"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                  <div className="text-6xl mb-4">🌐</div>
-                  <p className="text-lg font-medium">No Preview Available</p>
-                  <p className="text-sm mt-2">Make a request to generate code and see the live preview.</p>
-                </div>              )}
+        {/* PREVIEW TAB */}
+        {activeTab === "preview" && (
+          <div className="flex-1 bg-white">
+            {previewUrl ? (
+              <iframe src={previewUrl} className="w-full h-full border-0" title="Live Preview" sandbox="allow-scripts allow-same-origin" />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <p>No Preview Available</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* INPUT BAR (Bottom of Chat Tab) */}
+        {activeTab === "chat" && (
+          <div className="border-t border-[#1e1e28] bg-[#0a0a0f] p-4 sticky bottom-0 z-10">            <div className="max-w-4xl mx-auto relative group">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                placeholder="Tell me what to build..."
+                disabled={loading}
+                className="w-full px-6 py-4 bg-[#16161e] border border-[#1e1e28] hover:border-blue-500/50 focus:border-blue-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 transition-all duration-300 placeholder-gray-500 shadow-lg group-hover:shadow-xl"
+              />
+              <button
+                onClick={sendMessage}
+                disabled={loading || !input.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-blue-600/30 transform hover:scale-105"
+              >
+                Send
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );
