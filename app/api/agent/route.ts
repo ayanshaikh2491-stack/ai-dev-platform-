@@ -21,30 +21,27 @@ export async function POST(req: Request) {
         messages: [
           { 
             role: "system", 
-            content: "You are a helpful AI coding assistant. Output JSON with plan.summary and plan.steps[0].code if generating code." 
+            content: "You are a helpful AI coding assistant. Output a summary of what you'll build." 
           },
           { 
             role: "user", 
-            content: `Repo: ${repo}\nBranch: ${branch}\nTask: ${instruction}\n\nRespond in JSON: {"plan":{"summary":"...","steps":[{"file":"...","code":"..."}]}}` 
+            content: `Repo: ${repo}\nBranch: ${branch}\nTask: ${instruction}` 
           }
         ],
-        max_tokens: 4096,
+        max_tokens: 512,
         temperature: 0.5,
       }),
     });
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "{}";
-
-    let plan = { summary: "Task processed", steps: [] };
-    try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) plan = JSON.parse(jsonMatch[0]);
-    } catch {}
+    const content = data.choices?.[0]?.message?.content || "Task processed";
 
     return NextResponse.json({
       success: true,
-      plan,
+      plan: {
+        summary: content,
+        estimatedTime: "5-10 minutes",
+      },
     });
   } catch (error) {
     return NextResponse.json({ 
