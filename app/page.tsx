@@ -81,250 +81,143 @@ export default function Home() {
     setLoading(false);
   };
 
-  // Inline styles for guaranteed colors
-  const styles = {
-    container: {
-      display: 'flex',
-      height: '100vh',
-      background: 'linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 50%, #16213e 100%)',
-      color: 'white',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    },
-    sidebar: {
-      width: '280px',
-      background: '#0a0a0f',
-      borderRight: '1px solid #1e1e2e',
-      padding: '24px',
-      display: 'flex',
-      flexDirection: 'column',    },
-    logo: {
-      width: '40px',
-      height: '40px',
-      background: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899)',
-      borderRadius: '12px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontWeight: 'bold',
-      fontSize: '20px',
-      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)',
-    },
-    newChatBtn: {
-      width: '100%',
-      padding: '12px',
-      background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-      border: 'none',
-      borderRadius: '8px',
-      color: 'white',
-      fontWeight: '600',
-      cursor: 'pointer',
-      marginTop: '20px',
-    },
-    input: {
-      width: '100%',
-      padding: '12px',
-      background: '#16161e',
-      border: '1px solid #1e1e2e',
-      borderRadius: '8px',
-      color: 'white',
-      marginBottom: '16px',
-    },
-    mainContent: {
-      flex: 1,
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    tabs: {
-      display: 'flex',
-      borderBottom: '1px solid #1e1e2e',
-      background: '#0a0a0f',
-    },
-    tab: (active: boolean) => ({
-      padding: '12px 24px',
-      background: active ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' : 'transparent',
-      border: 'none',
-      color: active ? 'white' : '#9ca3af',
-      cursor: 'pointer',
-      fontWeight: active ? '600' : '400',    }),
-    chatArea: {
-      flex: 1,
-      overflowY: 'auto',
-      padding: '40px',
-    },
-    welcomeCard: {
-      maxWidth: '800px',
-      margin: '0 auto',
-      textAlign: 'center',
-    },
-    welcomeTitle: {
-      fontSize: '32px',
-      fontWeight: 'bold',
-      background: 'linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      marginBottom: '16px',
-    },
-    featureGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-      gap: '16px',
-      marginTop: '40px',
-    },
-    featureCard: {
-      padding: '24px',
-      background: '#16161e',
-      border: '1px solid #1e1e2e',
-      borderRadius: '12px',
-      textAlign: 'left',
-      cursor: 'pointer',
-      transition: 'all 0.3s',
-    },
-    inputArea: {
-      padding: '24px',
-      borderTop: '1px solid #1e1e2e',
-      background: '#0a0a0f',
-    },
-    inputContainer: {
-      maxWidth: '800px',
-      margin: '0 auto',
-      display: 'flex',
-      gap: '12px',
-    },
-    messageInput: {
-      flex: 1,
-      padding: '16px',
-      background: '#16161e',
-      border: '1px solid #1e1e2e',      borderRadius: '12px',
-      color: 'white',
-    },
-    sendBtn: {
-      padding: '16px 32px',
-      background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-      border: 'none',
-      borderRadius: '12px',
-      color: 'white',
-      fontWeight: '600',
-      cursor: 'pointer',
-    },
-  };
-
   return (
-    <div style={styles.container}>
+    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-black to-slate-900 text-white overflow-hidden">
       {/* Sidebar */}
-      <aside style={styles.sidebar}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <div style={styles.logo}>N</div>
+      <aside className="w-72 bg-[#0a0a0f] border-r border-[#1e1e2e] flex flex-col p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center font-bold text-xl shadow-lg shadow-blue-500/30">
+            N
+          </div>
           <div>
-            <div style={{ fontWeight: 'bold', fontSize: '18px' }}>NEXUS AI</div>
-            <div style={{ fontSize: '12px', color: '#9ca3af' }}>Dev Assistant</div>
+            <div className="font-bold text-lg">NEXUS AI</div>
+            <div className="text-xs text-gray-400">Dev Assistant</div>
           </div>
         </div>
         
-        <button style={styles.newChatBtn} onClick={() => setMessages([])}>
+        <button 
+          onClick={() => setMessages([])}          className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-lg font-semibold transition-all shadow-lg"
+        >
           + New Chat
         </button>
 
-        <div style={{ marginTop: '32px' }}>
-          <label style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Repository</label>
-          <input 
-            style={styles.input} 
-            value={repoUrl} 
-            onChange={(e) => setRepoUrl(e.target.value)}
-            placeholder="username/repo"
-          />
+        <div className="mt-8 space-y-4">
+          <div>
+            <label className="text-xs text-gray-400 block mb-2">Repository</label>
+            <input 
+              className="w-full px-4 py-3 bg-[#16161e] border border-[#1e1e2e] rounded-lg focus:outline-none focus:border-blue-500 text-sm"
+              value={repoUrl} 
+              onChange={(e) => setRepoUrl(e.target.value)}
+              placeholder="username/repo"
+            />
+          </div>
           
-          <label style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '8px', display: 'block' }}>Branch</label>
-          <input 
-            style={styles.input} 
-            value={branch} 
-            onChange={(e) => setBranch(e.target.value)}
-            placeholder="main"
-          />
+          <div>
+            <label className="text-xs text-gray-400 block mb-2">Branch</label>
+            <input 
+              className="w-full px-4 py-3 bg-[#16161e] border border-[#1e1e2e] rounded-lg focus:outline-none focus:border-purple-500 text-sm"
+              value={branch} 
+              onChange={(e) => setBranch(e.target.value)}
+              placeholder="main"
+            />
+          </div>
         </div>
 
-        <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid #1e1e2e' }}>
-          <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '12px' }}>Capabilities:</div>          <ul style={{ fontSize: '11px', color: '#d1d5db', lineHeight: '1.8', paddingLeft: '16px' }}>
-            <li>Web Development (React, Next.js)</li>
-            <li>Mobile Apps (React Native)</li>
-            <li>Backend APIs (Node.js)</li>
-            <li>Database (MongoDB, SQL)</li>
-            <li>DevOps (Vercel, GitHub)</li>
-            <li>Debugging & Fixes</li>
+        <div className="mt-auto pt-6 border-t border-[#1e1e2e]">
+          <div className="text-xs text-gray-400 mb-3">Capabilities:</div>
+          <ul className="text-xs text-gray-300 space-y-2">
+            <li>• Web Development (React, Next.js)</li>
+            <li>• Mobile Apps (React Native)</li>
+            <li>• Backend APIs (Node.js)</li>
+            <li>• Database (MongoDB, SQL)</li>
+            <li>• DevOps (Vercel, GitHub)</li>
+            <li>• Debugging & Fixes</li>
           </ul>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main style={styles.mainContent}>
+      <main className="flex-1 flex flex-col">
         {/* Tabs */}
-        <div style={styles.tabs}>
-          <button style={styles.tab(activeTab === 'chat')} onClick={() => setActiveTab('chat')}>💬 Chat</button>
-          <button style={styles.tab(activeTab === 'code')} onClick={() => setActiveTab('code')}>💻 Code Editor</button>
-          <button style={styles.tab(activeTab === 'preview')} onClick={() => setActiveTab('preview')}>🌐 Live Preview</button>
+        <div className="flex border-b border-[#1e1e2e] bg-[#0a0a0f]">
+          <button 
+            onClick={() => setActiveTab("chat")}
+            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === "chat" ? "border-blue-500 text-blue-400" : "border-transparent text-gray-400 hover:text-white"
+            }`}
+          >            💬 Chat
+          </button>
+          <button 
+            onClick={() => setActiveTab("code")}
+            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === "code" ? "border-blue-500 text-blue-400" : "border-transparent text-gray-400 hover:text-white"
+            }`}
+          >
+            💻 Code Editor
+          </button>
+          <button 
+            onClick={() => setActiveTab("preview")}
+            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === "preview" ? "border-blue-500 text-blue-400" : "border-transparent text-gray-400 hover:text-white"
+            }`}
+          >
+            🌐 Live Preview
+          </button>
         </div>
 
         {/* Chat Tab */}
-        {activeTab === 'chat' && (
+        {activeTab === "chat" && (
           <>
-            <div style={styles.chatArea}>
+            <div className="flex-1 overflow-y-auto p-10">
               {messages.length === 0 ? (
-                <div style={styles.welcomeCard}>
-                  <div style={{ fontSize: '64px', marginBottom: '16px' }}>🤖</div>
-                  <h1 style={styles.welcomeTitle}>Welcome to NEXUS AI</h1>
-                  <p style={{ color: '#9ca3af', fontSize: '16px', marginBottom: '40px' }}>
-                    Your autonomous development assistant. I can create, edit, debug, and deploy code.
+                <div className="max-w-4xl mx-auto text-center">
+                  <div className="text-6xl mb-6">🤖</div>
+                  <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    Welcome to NEXUS AI
+                  </h1>
+                  <p className="text-gray-400 text-lg mb-10">
+                    Your autonomous development assistant
                   </p>
                   
-                  <div style={styles.featureGrid}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      { icon: '🔐', title: 'Create Login Page', desc: 'With email & password' },
-                      { icon: '📧', title: 'Contact Form', desc: 'With validation' },
-                      { icon: '🧭', title: 'Navigation Bar', desc: 'Responsive menu' },
-                      { icon: '🌓', title: 'Dark Mode', desc: 'Toggle theme' },
+                      { icon: "🔐", title: "Create Login Page", desc: "With email & password" },
+                      { icon: "📧", title: "Contact Form", desc: "With validation" },
+                      { icon: "🧭", title: "Navigation Bar", desc: "Responsive menu" },
+                      { icon: "🌓", title: "Dark Mode", desc: "Toggle theme" },
                     ].map((item, i) => (
-                      <div 
-                        key={i} 
-                        style={{...styles.featureCard}}
+                      <button
+                        key={i}
                         onClick={() => setInput(item.desc)}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = '#3b82f6';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = '#1e1e2e';
-                          e.currentTarget.style.transform = 'translateY(0)';                        }}
+                        className="p-6 bg-[#16161e] border border-[#1e1e2e] hover:border-blue-500 rounded-xl text-left transition-all hover:transform hover:scale-[1.02]"
                       >
-                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>{item.icon}</div>
-                        <div style={{ fontWeight: '600', marginBottom: '4px' }}>{item.title}</div>
-                        <div style={{ fontSize: '12px', color: '#9ca3af' }}>{item.desc}</div>
-                      </div>
-                    ))}
+                        <div className="text-3xl mb-3">{item.icon}</div>
+                        <div className="font-semibold mb-1">{item.title}</div>
+                        <div className="text-sm text-gray-400">{item.desc}</div>
+                      </button>                    ))}
                   </div>
                 </div>
               ) : (
-                <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="max-w-4xl mx-auto space-y-4">
                   {messages.map((msg, i) => (
-                    <div key={i} style={{
-                      alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                      padding: '16px 20px',
-                      borderRadius: '12px',
-                      maxWidth: '80%',
-                      background: msg.role === 'user' 
-                        ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)' 
-                        : msg.role === 'system'
-                        ? 'rgba(239, 68, 68, 0.1)'
-                        : '#16161e',
-                      border: msg.role === 'system' ? '1px solid #ef4444' : '1px solid #1e1e2e',
-                      color: msg.role === 'system' ? '#fca5a5' : 'white',
-                    }}>
+                    <div 
+                      key={i} 
+                      className={`p-4 rounded-xl max-w-[85%] ${
+                        msg.role === "user" 
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 ml-auto rounded-br-md" 
+                          : msg.role === "system"
+                          ? "bg-red-950/30 border border-red-900 text-red-200 mr-auto rounded-bl-md"
+                          : "bg-[#16161e] border border-[#1e1e2e] mr-auto rounded-bl-md"
+                      }`}
+                    >
                       {msg.content}
                     </div>
                   ))}
                   {loading && (
-                    <div style={{ display: 'flex', gap: '4px', padding: '16px', background: '#16161e', borderRadius: '12px', width: 'fit-content' }}>
-                      <div style={{ width: '8px', height: '8px', background: '#3b82f6', borderRadius: '50%', animation: 'bounce 1s infinite' }}></div>
-                      <div style={{ width: '8px', height: '8px', background: '#8b5cf6', borderRadius: '50%', animation: 'bounce 1s infinite 0.2s' }}></div>
-                      <div style={{ width: '8px', height: '8px', background: '#ec4899', borderRadius: '50%', animation: 'bounce 1s infinite 0.4s' }}></div>
+                    <div className="flex gap-2 p-4 bg-[#16161e] border border-[#1e1e2e] rounded-xl w-fit">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: "0.2s"}}></div>
+                      <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{animationDelay: "0.4s"}}></div>
                     </div>
                   )}
                 </div>
@@ -332,30 +225,30 @@ export default function Home() {
             </div>
 
             {/* Input Area */}
-            <div style={styles.inputArea}>
-              <div style={styles.inputContainer}>
+            <div className="border-t border-[#1e1e2e] bg-[#0a0a0f] p-6">
+              <div className="max-w-4xl mx-auto flex gap-3">
                 <input
-                  style={styles.messageInput}
+                  className="flex-1 px-6 py-4 bg-[#16161e] border border-[#1e1e2e] rounded-xl focus:outline-none focus:border-blue-500"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                   placeholder="Tell me what to build..."
                   disabled={loading}
-                />                <button 
-                  style={styles.sendBtn} 
+                />
+                <button 
                   onClick={sendMessage}
                   disabled={loading || !input.trim()}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl font-semibold disabled:opacity-50 transition-all"
                 >
                   Send
                 </button>
               </div>
-            </div>
-          </>
+            </div>          </>
         )}
 
         {/* Code Tab */}
-        {activeTab === 'code' && (
-          <div style={{ flex: 1, background: '#0d1117' }}>
+        {activeTab === "code" && (
+          <div className="flex-1 bg-[#0d1117]">
             <Editor
               height="100%"
               language="html"
@@ -367,14 +260,14 @@ export default function Home() {
         )}
 
         {/* Preview Tab */}
-        {activeTab === 'preview' && (
-          <div style={{ flex: 1, background: 'white' }}>
+        {activeTab === "preview" && (
+          <div className="flex-1 bg-white">
             {previewUrl ? (
-              <iframe src={previewUrl} style={{ width: '100%', height: '100%', border: 'none' }} title="Preview" />
+              <iframe src={previewUrl} className="w-full h-full border-0" title="Preview" />
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '64px', marginBottom: '16px' }}>🌐</div>
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="text-center">
+                  <div className="text-6xl mb-4">🌐</div>
                   <p>No Preview Available</p>
                 </div>
               </div>
@@ -384,4 +277,4 @@ export default function Home() {
       </main>
     </div>
   );
-  }
+}
